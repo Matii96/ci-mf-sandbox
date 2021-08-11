@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  app:
+    container_name: ci-mf-sandbox
+    build:
+      context: .
+      target: ci-mf-sandbox
+    networks:
+      - prodnet
+
+networks:
+  prodnet:
