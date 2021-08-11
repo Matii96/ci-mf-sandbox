@@ -1,7 +1,10 @@
 version: 2.1
+
 orbs:
   node: circleci/node@4.1
-  aws-ecr: circleci/aws-ecr@6.15.0
+  aws-ecr: circleci/aws-ecr@4.0.1
+  aws-cli: circleci/aws-cli@0.1.1
+
 jobs:
   test:
     executor:
@@ -11,14 +14,29 @@ jobs:
       - node/install-packages
       - run:
           command: npm run test
+
+  build_and_push_image:
+    docker:
+      - image: circleci/python:3.7.1
+    steps:
+      - checkout
+      # - run:
+      #     name: "Pull Submodules"
+      #     command: |
+      #       git submodule init
+      #       git submodule update --remote
+      - setup_remote_docker
+      - aws-ecr/build-image:
+          repo: "ci-mf-sandbox"
+          tag: "latest,v0.1.${CIRCLE_BUILD_NUM}"
+      - aws-cli/install
+      - aws-ecr/ecr-login
+      - aws-ecr/push-image:
+          repo: "ci-mf-sandbox"
+          tag: "latest,v0.1.${CIRCLE_BUILD_NUM}"
+
 workflows:
   test-and-deploy:
     jobs:
       - test
-      - aws-ecr/build-and-push-image:
-        repo: ci-mf-sandbox
-        tag: "latest,v0.1.${CIRCLE_BUILD_NUM}"
-        dockerfile: Dockerfile
-        path: .
-        requires:
-          - test
+      - build_and_push_image
