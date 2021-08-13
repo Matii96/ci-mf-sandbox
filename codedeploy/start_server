@@ -1,0 +1,21 @@
+#!/bin/bash
+set -e
+set -u
+set -x
+REGION=$(curl -s 169.254.169.254/latest/dynamic/instance-identity/document | jq -r ".region")
+INSTANCE_NAME=ci-mf-sandbox
+
+# Set ENVs based on System Manager/Parameters Store data
+VARS=$(aws --region $REGION ssm get-parameters-by-path --recursive --path /calluna/$INSTANCE_NAME/staging --with-decryption | jq -r '.Parameters | .[] | .Name + "=" + .Value' | sed -e s#/calluna/$INSTANCE_NAME/staging/##g)
+for envvar in ${VARS}; do
+ export $envvar;
+done
+
+# Login to AWS ERC repo
+$(aws ecr get-login --region $REGION --no-include-email)
+
+# Run actual server start code
+cd /opt/codedeploy-agent/deployment-root/${DEPLOYMENT_GROUP_ID}/${DEPLOYMENT_ID}/deployment-archive
+COMPOSE="docker-compose -p $INSTANCE_NAME -f docker-compose.yml"
+${COMPOSE} up -d
+docker image prune -f
