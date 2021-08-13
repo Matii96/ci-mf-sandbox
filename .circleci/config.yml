@@ -22,6 +22,8 @@ jobs:
         user: root
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/project
       - setup_remote_docker
       - aws-ecr/build-image:
           repo: calluna-ecr-ci-mf-sandbox-staging
@@ -32,11 +34,34 @@ jobs:
           repo: calluna-ecr-ci-mf-sandbox-staging
           tag: latest-v0.1.${CIRCLE_BUILD_NUM}
 
+  code-deploy:
+    executor: aws-cli/default
+    working_directory: ~/project
+    steps:
+      - attach_workspace:
+          at: ~/project
+      - run:
+          name: Configure deployment
+          command: |
+            echo IMAGE=${AWS_ECR_ACCOUNT_URL}/calluna-ecr-ci-mf-sandbox-staging:latest-v0.1.${CIRCLE_BUILD_NUM} >> .env
+      - aws-cli/setup
+      - aws-code-deploy/push-bundle:
+          application-name: calluna-ci-mf-sandbox-staging-main_app
+          bundle-bucket: calluna-bucket-ci-mf-sandbox-staging
+          bundle-key: codedeploy/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BUILD_NUM}
+      - aws-code-deploy/deploy-bundle:
+          application-name: calluna-ci-mf-sandbox-staging-main_app
+          bundle-bucket: calluna-bucket-ci-mf-sandbox-staging
+          bundle-key: codedeploy/${CIRCLE_PROJECT_REPONAME}-${CIRCLE_BUILD_NUM}
+          deployment-group: calluna-ci-mf-sandbox-staging-main_app-group
+
 workflows:
   build_test_deploy:
     jobs:
       - test
- 
       - build-and-push:
           requires:
             - test
+      - code-deploy:
+          requires:
+            - build-and-push

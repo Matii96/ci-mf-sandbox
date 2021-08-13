@@ -7,7 +7,7 @@ COPY package*.json ./
 RUN npm install
 
 COPY ./src ./src
-COPY tsconfig.json tsconfig.build.json .env ./
+COPY ./ ./
 RUN npm run build
 RUN rm -rf src
 
