@@ -24,12 +24,12 @@ jobs:
       - checkout
       - setup_remote_docker
       - aws-ecr/build-image:
-          repo: ci-mf-sandbox
+          repo: calluna-ecr-ci-mf-sandbox-staging
           tag: latest-v0.1.${CIRCLE_BUILD_NUM}
       - aws-cli/install
       - aws-ecr/ecr-login
       - aws-ecr/push-image:
-          repo: ci-mf-sandbox
+          repo: calluna-ecr-ci-mf-sandbox-staging
           tag: latest-v0.1.${CIRCLE_BUILD_NUM}
 
 workflows:
