@@ -10,7 +10,7 @@ services:
     environment:
       NODE_OPTIONS: --max-old-space-size=4096
     volumes:
-      - .:/usr/src/app
+      - ~/repo:/usr/src/app
     networks:
       - testnet
     depends_on:
