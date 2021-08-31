@@ -29,6 +29,14 @@ jobs:
           root: ~/repo
           paths:
             - node_modules
+
+  run_unit_tests:
+    <<: *node_defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run: npm run test
+
   run_e2e_tests:
     <<: *node_defaults
     steps:
@@ -43,6 +51,9 @@ workflows:
       - install_dependencies:
           requires:
             - checkout_code
+      - run_unit_tests:
+          requires:
+            - install_dependencies
       - run_e2e_tests:
           requires:
             - install_dependencies
