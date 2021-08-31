@@ -5,7 +5,8 @@ services:
     container_name: app
     image: node:14.17-alpine
     working_dir: /usr/src/app
-    command: ./node_modules/.bin/jest --config ./test/jest-e2e.json --runInBand
+    # command: ./node_modules/.bin/jest --config ./test/jest-e2e.json --runInBand
+    command: ls -al
     environment:
       NODE_OPTIONS: --max-old-space-size=4096
     volumes:
