@@ -5,12 +5,11 @@ services:
     container_name: app
     image: node:14.17-alpine
     working_dir: /usr/src/app
-    # command: ./node_modules/.bin/jest --config ./test/jest-e2e.json --runInBand
-    command: ls -al
+    command: ./node_modules/.bin/jest --config ./test/jest-e2e.json --runInBand
     environment:
       NODE_OPTIONS: --max-old-space-size=4096
     volumes:
-      - ~/repo:/usr/src/app
+      - .:/usr/src/app
     networks:
       - testnet
     depends_on:
