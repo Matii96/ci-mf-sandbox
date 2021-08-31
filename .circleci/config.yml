@@ -41,6 +41,7 @@ jobs:
             chmod +x ~/docker-compose
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - setup_remote_docker
+      - run: npm i
       - run: npm run test:e2e
 
 workflows:
