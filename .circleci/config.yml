@@ -41,7 +41,8 @@ jobs:
             chmod +x ~/docker-compose
             sudo mv ~/docker-compose /usr/local/bin/docker-compose
       - setup_remote_docker
-      - run: cd ~/repo && npm run test:e2e
+      - run: ls -al
+      - run: cd ~/repo && docker-compose -f docker-compose.e2e.yml up --exit-code-from app
 
 workflows:
   build_test_deploy:
