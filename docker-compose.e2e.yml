@@ -14,7 +14,6 @@ services:
       - testnet
     depends_on:
       - test-db
-      - localstack
 
   test-db:
     container_name: test-db
