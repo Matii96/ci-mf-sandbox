@@ -9,13 +9,6 @@ references:
     machine:
       image: ubuntu-2004:202107-02
 
-  test: &test
-    working_directory: ~/repo
-    machine:
-      image: ubuntu-2004:202107-02
-      environment:
-        NODE_ENV: test
-
 jobs:
   checkout_code:
     <<: *node_defaults
@@ -38,18 +31,22 @@ jobs:
             - node_modules
 
   run_unit_tests:
-    <<: *test
+    <<: *node_defaults
     steps:
       - attach_workspace:
           at: ~/repo
       - run: npm run test
 
   run_e2e_tests:
-    <<: *test
+    <<: *node_defaults
     steps:
       - attach_workspace:
           at: ~/repo
-      - run: npm run test:e2e
+      - run:
+          name: 'e2e tests'
+          command: npm run test:e2e
+          enviroment:
+            NODE_ENV: test
 
 workflows:
   build_test_deploy:
